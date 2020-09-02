@@ -18,6 +18,7 @@ int ptr;
 int tmp;
 
 inline do_alloc(ptr) {
+    tmp = -1
     atomic {
         person_ct = 1;
         do
@@ -42,10 +43,4 @@ inline free(ptr) {
         person_valid[ptr] = 0;
         person_mem[ptr].age = 0
     };
-}
-
-active proctype alloc() {
-    do_alloc(ptr);
-    person_mem[ptr].age = 24;
-    free(ptr);
 }
