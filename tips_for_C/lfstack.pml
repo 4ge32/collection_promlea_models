@@ -1,4 +1,3 @@
-/* stack */
 #define N 3
 
 typedef Node {
@@ -7,182 +6,180 @@ typedef Node {
 };
 
 typedef Mem {
-    Node node;
-    byte refc;
+    Node node; // the actual object
+    byte refc; // to detect double free corruption
+    byte mon;  // monitor the access of the memory
 }
 
-Mem memory[N+1];
-Node nodes[N+1];
-byte mem_cnt = 0;
-byte node_cnt = 1;
-bool go = false;
+Node nodes[N+2];
 
+/* Index = memory address */
+Mem mem[N+2];
+Mem lfstack[N+2];
+
+int lfs_cnt = 1;
+
+// If return node.addr = 0,
+// It means ENOMEM.
 inline malloc(node) {
     d_step {
-        mem_cnt = mem_cnt + 1;
-    };
+        byte lc = 1;
+        do
+        :: lc <= N + 1 ->
+           if
+           :: mem[lc].refc == 0 ->
+              node.refc = 1;
+              break
+           fi;
+           lc = lc + 1
+        :: else -> break
+        od
+    }
 }
 
 inline free(node) {
-
+    d_step {
+        assert(node.refc == 1);
+        assert(node.addr != 0);
+        mem[node.addr].refc = 0;
+    }
 }
 
-inline cas(ncnt, old_top, new, ok) {
+inline load(org) {
+#ifndef ARM
+    d_step {
+        org.node.data = lfstack[lfs_cnt].node.data;
+        org.node.next = lfs_cnt - 1;
+        printf("[LOAD] pid=%d---\n", _pid);
+    }
+#else
+    d_step {
+        org.node.data = lfstack[lfs_cnt].node.data;
+        org.node.next = lfs_cnt - 1;
+        lfstack[lfs_cnt].mon = _pid + 100;
+        printf("[RESERVED] lfstack[%d].mon = %d\n", lfs_cnt, _pid);
+    }
+#endif
+}
+
+/* Simulate comparen and swap at C11 */
+inline cas(expected, desired, suc) {
+#ifndef ARM
     d_step {
         if
-        :: old_top.data == nodes[ncnt].data ->
+        :: lfstack[lfs_cnt].node.data == expected.node.data ->
            if
-           ::old_top.next == nodes[ncnt].next ->
-             assert(nodes[node_cnt].data == 0);
-             nodes[node_cnt].data = new.data;
-             nodes[node_cnt].next = new.next;
-             node_cnt = node_cnt + 1;
-             ok = true
-           :: else -> ok = false
-           fi
+           :: lfstack[lfs_cnt].node.next == 0 ->
+              lfstack[lfs_cnt].node.data = desired.node.data;
+              lfstack[lfs_cnt].node.next = desired.node.next;
+              lfs_cnt = lfs_cnt + 1;
+              suc = true;
+           :: else ->
+              expected.node.data = lfstack[lfs_cnt].node.data;
+              expected.node.next = lfstack[lfs_cnt].node.next;
+              suc = false;
+           fi;
         :: else ->
-           ok = false
+           expected.node.data = lfstack[lfs_cnt].node.data;
+           expected.node.next = lfstack[lfs_cnt].node.next;
+           suc = false;
         fi
     }
-}
-
-inline push(new, old_top, ok, retry) {
-    byte local_stack_addr[N]; /* memory address */
-    do
-    :: true ->
-       /* atomic_load() */
-       d_step {
-           old_top.data = nodes[node_cnt].data;
-           old_top.next = nodes[node_cnt].next;
-           local_stack_addr[_pid] = node_cnt;
-       };
-       new.next = local_stack_addr[_pid] - 1;
-       /* compare and swap */
-       cas(local_stack_addr[_pid], old_top, new, ok);
-       if
-       :: (ok == true) -> break;
-       :: (ok == false) ->
-          retry = retry + 1;
-       fi;
-    od;
-    assert(ok == true);
-}
-
-byte seq = 0;
-active[N] proctype producer() provided(go == true) {
-    Node node;
-    Node old_top;
-    bool ok = false;
-    byte retry = 0;
-    node.data = _pid;
-    node.next = -1;
-
-    push(node, old_top, ok, retry)
-    printf("pid=%d: stack[%d] == %d(%d) ok?=%d(%d)\n",
-           _pid,
-           _pid,
-           nodes[_pid].data,
-           nodes[_pid].next,
-           ok, retry);
-
-    /* Entire verification phase */
+#else
     d_step {
-        seq = seq + 1;
         if
-        :: seq == N ->
-            int i = 0;
-            int j = 0;
-            do
-            :: i < N ->
-                printf("stack[%d]:%d(%d:%d)\n", i, nodes[i].data, nodes[i].next, retry);
-                i = i + 1;
-            :: else -> break;
-            od;
-            i = 0;
-            /* Do you have duplicated nodes? */
-            do
-            :: i < N - 1 ->
-               j = i + 1;
-               do
-               :: j < N ->
-                  assert(nodes[i].data != nodes[j].data);
-                  printf("(i, j) = (%d, %d)\n", i, j);
-                  j = j + 1;
-               :: else -> break;
-               od;
-               i = i + 1;
-            :: else -> break;
-            od;
-            /* Do you have dataid pointers? */
-            i = 0;
-            do
-            :: i < N - 1 ->
-               j = i + 1;
-               do
-               :: j < N ->
-                  if
-                  :: nodes[i].data > 0 ->
-                     assert(nodes[i].next == i-1);
-                  fi;
-                  j = j + 1;
-               :: else -> break;
-               od;
-               i = i + 1;
-            :: else -> break;
-            od;
-        :: else -> skip
+        :: lfstack[lfs_cnt].mon == _pid + 100 ->
+           lfstack[lfs_cnt].node.data = desired.node.data;
+           lfstack[lfs_cnt].node.next = desired.node.next;
+           lfs_cnt = lfs_cnt + 1;
+           lfstack[lfs_cnt].mon = 0;
+           suc = true;
+        :: else ->
+           expected.node.data = lfstack[lfs_cnt].node.data;
+           expected.node.next = lfstack[lfs_cnt].node.next;
+           lfstack[lfs_cnt].mon = 0;
+           suc = false;
         fi
+    }
+#endif
+}
+
+bool go = false;
+int pass = 0;
+active[N] proctype producer() provided (go == true) {
+    Mem m;
+    Mem org
+    byte top;
+    bool suc = false;
+    malloc(m);
+    m.node.data = _pid + 100;
+
+cas_again:
+    load(org);
+    m.node.next = org.node.next;
+    printf("[CAS]%d: data=%d, next=%d\n",
+          _pid,
+          m.node.data,
+          m.node.next);
+    cas(org, m, suc);
+    if
+    :: suc == false -> printf("[FAIL]%d: fail\n", _pid); goto cas_again
+    :: else -> skip
+    fi;
+    printf("[SUCCESS]pid=%d: Success\n", _pid);
+
+    /* Validate the result */
+    atomic {
+    pass = pass + 1;
+
+    int ccc = 0;
+    if
+    :: pass == N ->
+        do
+        :: ccc < N+1 ->
+           printf("lfstack[%d]: data(%d) next(%d)\n",
+                  ccc,
+                  lfstack[ccc].node.data,
+                  lfstack[ccc].node.next);
+           if
+           :: ccc >= 1 ->
+              //assert(lfstack[ccc].node.next == ccc - 1);
+              skip
+           :: else -> skip;
+           fi;
+           ccc = ccc + 1;
+        :: else -> break;
+        od
+        printf("Top: %d\n", lfs_cnt-1);
+    :: else -> skip;
+    fi;
     }
 }
 
-inline pop(node, old_top, ok) {
-    byte local_stack_addr[N * 2];
-    bool success = false;
-    do
-    :: true ->
-       /* atomic_load() */
-       d_step {
-           old_top.data = nodes[node_cnt].data;
-           old_top.next = nodes[node_cnt].next;
-           local_stack_addr[_pid] = node_cnt;
-       }
-       if
-       :: node_cnt == 0 -> break;
-       fi;
-       if
-       :: nodes[local_stack_addr[_pid] - 1].data == 0 ->
-          break;
-       :: else -> skip;
-       fi;
-       /* compare and swap */
-       cas(local_stack_addr[_pid], old_top, node, ok)
-       if
-       :: (ok == true) ->
-          success = true;
-          break;
-       :: else -> printf("H\n"); break;
-       fi;
-    od;
+proctype consumer() {
+    //lfs_cnt = lfs_cnt - 1;
+    skip
 }
-
-active proctype consumer() provided(go == true) {
-    Node node;
-    node.data = 0;
-    node.next = -1;
-    Node old;
-    bool ok = false;
-    pop(node, old, ok);
-}
-
 
 init {
-    int init_cnt = 0;
+    int st = 1;
     do
-    :: init_cnt < N ->
-        nodes[init_cnt].data = 0;
-        nodes[init_cnt].next = -1;
-        init_cnt = init_cnt + 1;
+    :: st < N+1 ->
+       lfstack[st].node.next = st;
+       st = st + 1;
+    :: else -> break
+    od;
+    st = 0;
+    do
+    :: st < N+2 ->
+       lfstack[st].refc = 0;
+       lfstack[st].mon = 0;
+       lfstack[st].node.data = 100;
+       lfstack[st].node.next = 0;
+       printf("lfstack[%d]: %d\n", st, lfstack[st].node.next);
+       st = st + 1;
     :: else -> break
     od;
     go = true;
+    //run consumer();
 }
