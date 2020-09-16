@@ -491,66 +491,78 @@ int _;	/* predefined write-only variable */
 #endif
 
 short src_ln2 [] = {
-	  0, 131, 132, 133,   0, };
+	  0, 137, 140, 141, 142, 143, 144, 145, 
+	146, 147, 148, 149, 150, 151, 152, 153, 
+	154, 155, 156, 157, 158, 159, 161, 162, 
+	166, 167, 168, 169,   0,   0, 172, 177, 
+	177, 185, 187, 188, 190, 191, 192, 192, 
+	186, 194, 186, 194,   0, };
 S_F_MAP src_file2 [] = {
 	{ "-", 0, 0 },
-	{ "lfstack.pml", 1, 3 },
-	{ "-", 4, 5 }
+	{ "lfstack.pml", 1, 27 },
+	{ "-", 28, 29 },
+	{ "lfstack.pml", 30, 43 },
+	{ "-", 44, 45 }
 };
 uchar reached2 [] = {
-	  0,   0,   0,   0,   0, };
+	  0,   0,   0,   0,   0,   0,   0,   0, 
+	  0,   0,   0,   0,   0,   0,   0,   0, 
+	  0,   0,   0,   0,   0,   0,   0,   0, 
+	  0,   0,   0,   0,   0,   1,   0,   0, 
+	  0,   0,   1,   0,   0,   0,   1,   1, 
+	  0,   1,   1,   0,   0, };
 uchar *loopstate2;
 
 short src_ln1 [] = {
-	  0,   0,   0,  40,  34, 107, 108, 109, 
-	109, 106, 111, 111,   0,   0,   0,   0, 
-	  0,   0,   0,   0,   0,   0,   0,   0, 
-	  0,   0,   0, 112, 123, 123, 124, 124, 
-	122, 127,   0,   0,   0,   0,   0,   0, 
-	  0,   0,   0,   0,   0,   0,   0,   0, 
-	  0,   0,  16,  15, 128,   0, };
+	  0,   0,  22,  21,  59,  59,  60,  60, 
+	 58,  62,  62,   0,   0,   0,   0,   0, 
+	  0,   0,   0,  31,  30,  67,  55, 129, 
+	  0,   0,   0,   0,   0,  91,  90, 130, 
+	130, 128, 133, 133, 134,   0, };
 S_F_MAP src_file1 [] = {
-	{ "-", 0, 2 },
-	{ "lfstack.pml", 3, 11 },
-	{ "-", 12, 26 },
-	{ "lfstack.pml", 27, 33 },
-	{ "-", 34, 49 },
-	{ "lfstack.pml", 50, 52 },
-	{ "-", 53, 54 }
+	{ "-", 0, 1 },
+	{ "lfstack.pml", 2, 10 },
+	{ "-", 11, 18 },
+	{ "lfstack.pml", 19, 23 },
+	{ "-", 24, 28 },
+	{ "lfstack.pml", 29, 36 },
+	{ "-", 37, 38 }
 };
 uchar reached1 [] = {
-	  0,   0,   1,   1,   0,   1,   1,   1, 
-	  1,   0,   1,   0,   1,   1,   1,   1, 
-	  1,   0,   0,   0,   1,   1,   1,   1, 
-	  1,   0,   0,   0,   1,   1,   1,   1, 
+	  0,   0,   1,   1,   1,   1,   1,   1, 
 	  0,   1,   0,   1,   1,   1,   1,   1, 
-	  1,   1,   0,   0,   0,   0,   1,   1, 
-	  0,   0,   1,   0,   0,   0, };
+	  0,   0,   1,   1,   0,   1,   0,   1, 
+	  0,   1,   1,   1,   1,   1,   0,   1, 
+	  1,   0,   1,   0,   0,   0, };
 uchar *loopstate1;
 
 short src_ln0 [] = {
-	  0,   0,   0,  40,  34,  79,   0,   0, 
 	  0,   0,   0,   0,   0,   0,   0,   0, 
-	  0,   0,   0,   0,   0,  80,  91,  91, 
-	 92,  92,  90,  95,   0,   0,   0,   0, 
 	  0,   0,   0,   0,   0,   0,   0,   0, 
-	  0,   0,   0,   0,  16,  15,  96,   0, };
+	  0,   0,   0,  71,  70, 109,   0,  22, 
+	 21,  49,   0,   0,   0,   0,   0,   0, 
+	  0,   0,  31,  30,  46, 112,   0,   0, 
+	  0,   0,   0,  91,  90, 114, 115, 115, 
+	111, 118, 118, 119,   0, };
 S_F_MAP src_file0 [] = {
-	{ "-", 0, 2 },
-	{ "lfstack.pml", 3, 5 },
-	{ "-", 6, 20 },
-	{ "lfstack.pml", 21, 27 },
-	{ "-", 28, 43 },
-	{ "lfstack.pml", 44, 46 },
-	{ "-", 47, 48 }
+	{ "-", 0, 18 },
+	{ "lfstack.pml", 19, 21 },
+	{ "-", 22, 22 },
+	{ "lfstack.pml", 23, 25 },
+	{ "-", 26, 33 },
+	{ "lfstack.pml", 34, 37 },
+	{ "-", 38, 42 },
+	{ "lfstack.pml", 43, 51 },
+	{ "-", 52, 53 }
 };
 uchar reached0 [] = {
-	  0,   0,   1,   1,   0,   0,   1,   1, 
-	  1,   1,   1,   0,   0,   0,   1,   1, 
-	  1,   1,   1,   0,   0,   0,   1,   1, 
-	  1,   1,   0,   1,   0,   1,   1,   1, 
-	  1,   1,   1,   1,   0,   0,   0,   0, 
-	  1,   1,   0,   0,   1,   0,   0,   0, };
+	  0,   1,   1,   1,   1,   1,   1,   1, 
+	  0,   1,   1,   0,   0,   1,   1,   0, 
+	  0,   0,   0,   1,   0,   0,   0,   1, 
+	  1,   0,   1,   1,   1,   1,   1,   0, 
+	  0,   1,   1,   0,   0,   1,   0,   1, 
+	  1,   1,   1,   1,   0,   1,   1,   1, 
+	  0,   1,   0,   0,   0, };
 uchar *loopstate0;
 uchar reached3[3];  /* np_ */
 uchar *loopstate3;  /* np_ */
@@ -586,8 +598,8 @@ char *procname[] = {
 enum btypes { NONE=0, N_CLAIM=1, I_PROC=2, A_PROC=3, P_PROC=4, E_TRACE=5, N_TRACE=6 };
 
 int Btypes[] = {
-   3,	/* producer */
-   3,	/* consumer */
+   4,	/* producer */
+   4,	/* consumer */
    2,	/* :init: */
    0	/* :np_: */
 };
@@ -870,33 +882,29 @@ addproc(int calling_pid, int priority, int n)
 		reached2[1]=1;
 		/* params: */
 		/* locals: */
+#ifdef VAR_RANGES
+		logval(":init::i", ((P2 *)pptr(h))->i);
+#endif
 #ifdef HAS_CODE
 		locinit2(h);
 #endif
 		break;
 	case 1:	/* consumer */
 		((P1 *)pptr(h))->_t = 1;
-		((P1 *)pptr(h))->_p = 4;
+		((P1 *)pptr(h))->_p = 22;
 #ifdef HAS_PRIORITY
 		((P1 *)pptr(h))->_priority = priority; /* was: 1 */
 #endif
-		reached1[4]=1;
+		reached1[22]=1;
 		/* params: */
 		/* locals: */
-		((P1 *)pptr(h))->m.data = 0;
-		((P1 *)pptr(h))->m.mon = 0;
-		((P1 *)pptr(h))->m.lcnt = 0;
-		((P1 *)pptr(h))->old = 0;
-		((P1 *)pptr(h))->new = 0;
+		((P1 *)pptr(h))->orig = 0;
+		((P1 *)pptr(h))->next = 0;
 		((P1 *)pptr(h))->suc = 0;
 #ifdef VAR_RANGES
 		logval("consumer:suc", ((P1 *)pptr(h))->suc);
-		logval("consumer:old", ((P1 *)pptr(h))->old);
-		logval("consumer:new", ((P1 *)pptr(h))->new);
-		logval("consumer:i", ((P1 *)pptr(h))->_3_6_6_i);
-		logval("consumer:m.data", ((P1 *)pptr(h))->m.data);
-		logval("consumer:m.mon", ((P1 *)pptr(h))->m.mon);
-		logval("consumer:m.lcnt", ((P1 *)pptr(h))->m.lcnt);
+		logval("consumer:orig", ((P1 *)pptr(h))->orig);
+		logval("consumer:next", ((P1 *)pptr(h))->next);
 #endif
 #ifdef HAS_CODE
 		locinit1(h);
@@ -904,27 +912,24 @@ addproc(int calling_pid, int priority, int n)
 		break;
 	case 0:	/* producer */
 		((P0 *)pptr(h))->_t = 0;
-		((P0 *)pptr(h))->_p = 4;
+		((P0 *)pptr(h))->_p = 20;
 #ifdef HAS_PRIORITY
 		((P0 *)pptr(h))->_priority = priority; /* was: 1 */
 #endif
-		reached0[4]=1;
+		reached0[20]=1;
 		/* params: */
 		/* locals: */
-		((P0 *)pptr(h))->m.data = 0;
-		((P0 *)pptr(h))->m.mon = 0;
-		((P0 *)pptr(h))->m.lcnt = 0;
-		((P0 *)pptr(h))->old = 0;
-		((P0 *)pptr(h))->new = 0;
+		((P0 *)pptr(h))->addr = 0;
+		((P0 *)pptr(h))->orig = 0;
+		((P0 *)pptr(h))->next = 0;
+		((P0 *)pptr(h))->i = 0;
 		((P0 *)pptr(h))->suc = 0;
 #ifdef VAR_RANGES
 		logval("producer:suc", ((P0 *)pptr(h))->suc);
-		logval("producer:old", ((P0 *)pptr(h))->old);
-		logval("producer:new", ((P0 *)pptr(h))->new);
-		logval("producer:i", ((P0 *)pptr(h))->_2_3_3_i);
-		logval("producer:m.data", ((P0 *)pptr(h))->m.data);
-		logval("producer:m.mon", ((P0 *)pptr(h))->m.mon);
-		logval("producer:m.lcnt", ((P0 *)pptr(h))->m.lcnt);
+		logval("producer:addr", ((P0 *)pptr(h))->addr);
+		logval("producer:orig", ((P0 *)pptr(h))->orig);
+		logval("producer:next", ((P0 *)pptr(h))->next);
+		logval("producer:i", ((P0 *)pptr(h))->i);
 #endif
 #ifdef HAS_CODE
 		locinit0(h);
@@ -1083,6 +1088,7 @@ run(void)
 	if ((Maxbody % WS) != 0)
 		Maxbody += WS - (Maxbody % WS);
 
+	stopstate[1][21] = 1;
 	retrans(0, _nstates0, _start0, src_ln0, reached0, loopstate0);
 	retrans(1, _nstates1, _start1, src_ln1, reached1, loopstate1);
 	retrans(2, _nstates2, _start2, src_ln2, reached2, loopstate2);
@@ -12433,41 +12439,61 @@ do_reach(void)
 void
 iniglobals(int calling_pid)
 {
-		now.go = 0;
 		now.pass = 0;
-		now.lfstack[0].data = 0;
-		now.lfstack[0].mon = 0;
-		now.lfstack[0].lcnt = 0;
-		now.lfstack[1].data = 0;
-		now.lfstack[1].mon = 0;
-		now.lfstack[1].lcnt = 0;
-		now.lfstack[2].data = 0;
-		now.lfstack[2].mon = 0;
-		now.lfstack[2].lcnt = 0;
-		now.lfstack[3].data = 0;
-		now.lfstack[3].mon = 0;
-		now.lfstack[3].lcnt = 0;
-		now.lfs_cnt.data = 0;
-		now.lfs_cnt.mon = 0;
-		now.lfs_cnt.lcnt = 0;
+		now.mem[0].data = 0;
+		now.mem[0].next = 0;
+		now.mem[0].refc = 0;
+		now.mem[0].mon = 0;
+		now.mem[1].data = 0;
+		now.mem[1].next = 0;
+		now.mem[1].refc = 0;
+		now.mem[1].mon = 0;
+		now.mem[2].data = 0;
+		now.mem[2].next = 0;
+		now.mem[2].refc = 0;
+		now.mem[2].mon = 0;
+		now.mem[3].data = 0;
+		now.mem[3].next = 0;
+		now.mem[3].refc = 0;
+		now.mem[3].mon = 0;
+		now.mem[4].data = 0;
+		now.mem[4].next = 0;
+		now.mem[4].refc = 0;
+		now.mem[4].mon = 0;
+		now.mem[5].data = 0;
+		now.mem[5].next = 0;
+		now.mem[5].refc = 0;
+		now.mem[5].mon = 0;
+		now.lfstack.head = 0;
+		now.lfstack.mon = 0;
 #ifdef VAR_RANGES
-		logval("go", now.go);
 		logval("pass", now.pass);
-		logval("lfstack[0].data", now.lfstack[0].data);
-		logval("lfstack[0].mon", now.lfstack[0].mon);
-		logval("lfstack[0].lcnt", now.lfstack[0].lcnt);
-		logval("lfstack[1].data", now.lfstack[1].data);
-		logval("lfstack[1].mon", now.lfstack[1].mon);
-		logval("lfstack[1].lcnt", now.lfstack[1].lcnt);
-		logval("lfstack[2].data", now.lfstack[2].data);
-		logval("lfstack[2].mon", now.lfstack[2].mon);
-		logval("lfstack[2].lcnt", now.lfstack[2].lcnt);
-		logval("lfstack[3].data", now.lfstack[3].data);
-		logval("lfstack[3].mon", now.lfstack[3].mon);
-		logval("lfstack[3].lcnt", now.lfstack[3].lcnt);
-		logval("lfs_cnt.data", now.lfs_cnt.data);
-		logval("lfs_cnt.mon", now.lfs_cnt.mon);
-		logval("lfs_cnt.lcnt", now.lfs_cnt.lcnt);
+		logval("mem[0].data", now.mem[0].data);
+		logval("mem[0].next", now.mem[0].next);
+		logval("mem[0].refc", now.mem[0].refc);
+		logval("mem[0].mon", now.mem[0].mon);
+		logval("mem[1].data", now.mem[1].data);
+		logval("mem[1].next", now.mem[1].next);
+		logval("mem[1].refc", now.mem[1].refc);
+		logval("mem[1].mon", now.mem[1].mon);
+		logval("mem[2].data", now.mem[2].data);
+		logval("mem[2].next", now.mem[2].next);
+		logval("mem[2].refc", now.mem[2].refc);
+		logval("mem[2].mon", now.mem[2].mon);
+		logval("mem[3].data", now.mem[3].data);
+		logval("mem[3].next", now.mem[3].next);
+		logval("mem[3].refc", now.mem[3].refc);
+		logval("mem[3].mon", now.mem[3].mon);
+		logval("mem[4].data", now.mem[4].data);
+		logval("mem[4].next", now.mem[4].next);
+		logval("mem[4].refc", now.mem[4].refc);
+		logval("mem[4].mon", now.mem[4].mon);
+		logval("mem[5].data", now.mem[5].data);
+		logval("mem[5].next", now.mem[5].next);
+		logval("mem[5].refc", now.mem[5].refc);
+		logval("mem[5].mon", now.mem[5].mon);
+		logval("lfstack.head", now.lfstack.head);
+		logval("lfstack.mon", now.lfstack.mon);
 #endif
 }
 
@@ -13048,17 +13074,9 @@ void
 active_procs(void)
 {
 	if (reversing == 0) {
-		Addproc(0, 1);
-		Addproc(0, 1);
-		Addproc(1, 1);
-		Addproc(1, 1);
 		Addproc(2, 1);
 	} else {
 		Addproc(2, 1);
-		Addproc(1, 1);
-		Addproc(1, 1);
-		Addproc(0, 1);
-		Addproc(0, 1);
 	}
 }
 #ifdef MA
@@ -14173,24 +14191,34 @@ void
 c_globals(void)
 {	/* int i; */
 	printf("global vars:\n");
+		printf("	(struct mem)\n");
+	printf("	int    data:	%d\n", now.mem[ 0 ].data);
+	printf("	int    next:	%d\n", now.mem[ 0 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 0 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 0 ].mon);
+	printf("	int    data:	%d\n", now.mem[ 1 ].data);
+	printf("	int    next:	%d\n", now.mem[ 1 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 1 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 1 ].mon);
+	printf("	int    data:	%d\n", now.mem[ 2 ].data);
+	printf("	int    next:	%d\n", now.mem[ 2 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 2 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 2 ].mon);
+	printf("	int    data:	%d\n", now.mem[ 3 ].data);
+	printf("	int    next:	%d\n", now.mem[ 3 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 3 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 3 ].mon);
+	printf("	int    data:	%d\n", now.mem[ 4 ].data);
+	printf("	int    next:	%d\n", now.mem[ 4 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 4 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 4 ].mon);
+	printf("	int    data:	%d\n", now.mem[ 5 ].data);
+	printf("	int    next:	%d\n", now.mem[ 5 ].next);
+	printf("	int    refc:	%d\n", now.mem[ 5 ].refc);
+	printf("	int    mon:	%d\n", now.mem[ 5 ].mon);
 		printf("	(struct lfstack)\n");
-	printf("	byte   data:	%d\n", now.lfstack[ 0 ].data);
-	printf("	byte   mon:	%d\n", now.lfstack[ 0 ].mon);
-	printf("	int    lcnt:	%d\n", now.lfstack[ 0 ].lcnt);
-	printf("	byte   data:	%d\n", now.lfstack[ 1 ].data);
-	printf("	byte   mon:	%d\n", now.lfstack[ 1 ].mon);
-	printf("	int    lcnt:	%d\n", now.lfstack[ 1 ].lcnt);
-	printf("	byte   data:	%d\n", now.lfstack[ 2 ].data);
-	printf("	byte   mon:	%d\n", now.lfstack[ 2 ].mon);
-	printf("	int    lcnt:	%d\n", now.lfstack[ 2 ].lcnt);
-	printf("	byte   data:	%d\n", now.lfstack[ 3 ].data);
-	printf("	byte   mon:	%d\n", now.lfstack[ 3 ].mon);
-	printf("	int    lcnt:	%d\n", now.lfstack[ 3 ].lcnt);
-		printf("	(struct lfs_cnt)\n");
-	printf("	byte   data:	%d\n", now.lfs_cnt.data);
-	printf("	byte   mon:	%d\n", now.lfs_cnt.mon);
-	printf("	int    lcnt:	%d\n", now.lfs_cnt.lcnt);
-	printf("	bit    go:	%d\n", now.go);
+	printf("	int    head:	%d\n", now.lfstack.head);
+	printf("	int    mon:	%d\n", now.lfstack.mon);
 	printf("	int    pass:	%d\n", now.pass);
 }
 void
@@ -14198,29 +14226,22 @@ c_locals(int pid, int tp)
 {	/* int i; */
 	switch(tp) {
 	case 2:
-		/* none */
+		printf("local vars proc %d (:init:):\n", pid);
+	printf("	int    i:	%d\n", ((P2 *)pptr(pid))->i);
 		break;
 	case 1:
 		printf("local vars proc %d (consumer):\n", pid);
-		printf("	(struct m)\n");
-	printf("	byte   data:	%d\n", ((P1 *)pptr(pid))->m.data);
-	printf("	byte   mon:	%d\n", ((P1 *)pptr(pid))->m.mon);
-	printf("	int    lcnt:	%d\n", ((P1 *)pptr(pid))->m.lcnt);
-	printf("	int    old:	%d\n", ((P1 *)pptr(pid))->old);
-	printf("	int    new:	%d\n", ((P1 *)pptr(pid))->new);
+	printf("	int    orig:	%d\n", ((P1 *)pptr(pid))->orig);
+	printf("	int    next:	%d\n", ((P1 *)pptr(pid))->next);
 	printf("	bit    suc:	%d\n", ((P1 *)pptr(pid))->suc);
-	printf("	int    i:	%d\n", ((P1 *)pptr(pid))->_3_6_6_i);
 		break;
 	case 0:
 		printf("local vars proc %d (producer):\n", pid);
-		printf("	(struct m)\n");
-	printf("	byte   data:	%d\n", ((P0 *)pptr(pid))->m.data);
-	printf("	byte   mon:	%d\n", ((P0 *)pptr(pid))->m.mon);
-	printf("	int    lcnt:	%d\n", ((P0 *)pptr(pid))->m.lcnt);
-	printf("	int    old:	%d\n", ((P0 *)pptr(pid))->old);
-	printf("	int    new:	%d\n", ((P0 *)pptr(pid))->new);
+	printf("	int    addr:	%d\n", ((P0 *)pptr(pid))->addr);
+	printf("	int    orig:	%d\n", ((P0 *)pptr(pid))->orig);
+	printf("	int    next:	%d\n", ((P0 *)pptr(pid))->next);
+	printf("	int    i:	%d\n", ((P0 *)pptr(pid))->i);
 	printf("	bit    suc:	%d\n", ((P0 *)pptr(pid))->suc);
-	printf("	int    i:	%d\n", ((P0 *)pptr(pid))->_2_3_3_i);
 		break;
 	}
 }
@@ -14234,7 +14255,7 @@ c_chandump(int unused)
 {	unused++; /* avoid complaints */
 }
 
-Trans *t_id_lkup[101];
+Trans *t_id_lkup[130];
 
 
 #ifdef BFS_PAR

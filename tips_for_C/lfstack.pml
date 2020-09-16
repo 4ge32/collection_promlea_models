@@ -1,133 +1,197 @@
 #define N 2
+#define M N*3
+#define NULL -1
 
 typedef Mem {
-    byte data; // actual data
-    byte mon;  // monitor the access of the memory
-    int lcnt;  // emulate C pointer
+    int data; // actual data
+    int next; // next pointer
+    int refc  // reference count for detecting double free
+    int mon;  // monitor the access of the memory
 }
 
-Mem lfstack[N+2];
-Mem lfs_cnt;
-bool go = false;
+typedef Lfstack {
+    int head;
+    int mon;
+}
+
+Mem mem[M]; // index expresses memory address
+Lfstack lfstack;
 int pass = 0;
 
-
-inline end() {
+inline atomic_load(_cur) {
     d_step {
-        pass = pass + 1;
-        if
-        :: pass == N*2 ->
-           int i = 0;
-           do
-           :: i < N ->
-              assert(lfstack[i].data == i);
-              printf("lfstack[%d]: %d\n",
-                     i, lfstack[i].data);
-              i = i + 1;
-           :: else -> break;
-           od;
-        :: else -> skip
-        fi;
-    }
-}
-
-inline load(ptr) {
-#ifndef LL_SC
-    d_step {
-        ptr = lfs_cnt.lcnt;
-    }
-#else
-    d_step {
-        ptr = lfs_cnt.lcnt;
-        lfs_cnt.mon = _pid;
-    }
+        _cur = lfstack.head;
+#ifdef LL_SC
+        // actually, load shall only mark. Do not overwrite it.
+        lfstack.mon = _pid;
 #endif
+    }
 }
 
-inline cas(old, new, suc) {
+inline compare_and_swap(_new) {
+    d_step {
+        if
 #ifndef LL_SC
-    //d_step {
-        if
-        :: lfs_cnt.lcnt == old ->
-           lfs_cnt.lcnt = new;
-           suc = true;
-        :: else ->
-           suc = false;
-        fi;
-    //}
+        :: orig == lfstack.head ->
 #else
-    //d_step {
-        if
-        :: lfs_cnt.mon == _pid ->
-           lfs_cnt.lcnt = new;
-           suc = true;
-        :: else ->
-           suc = false;
-        fi;
-    //}
+        :: lfstack.mon == _pid->
 #endif
+           lfstack.head = _new;
+#ifdef LL_SC
+           lfstack.mon = -1;
+#endif
+           suc = true;
+        :: else -> skip;
+        fi;
+    }
 }
 
-active[N] proctype producer() provided (go == true) {
-    Mem m;
-    int old;
-    int new;
+inline push() {
+    // atomic_load
+    atomic_load(orig);
+    mem[addr].next = orig;
+
+    // compare and swap
+    compare_and_swap(addr);
+}
+
+inline pop() {
+    // atomic_load
+    atomic_load(orig);
+    if
+    :: orig == NULL -> goto end;
+    :: else -> skip;
+    fi;
+    next = mem[orig].next;
+
+    // compare_and_swap
+    compare_and_swap(next);
+end:
+    skip
+}
+
+inline malloc() {
+    d_step {
+        do
+        :: i < M ->
+           if
+           :: mem[i].refc == 0 ->
+              mem[i].data = 0;
+              mem[i].next = NULL;
+              mem[i].refc = 1;
+              mem[i].mon = 0;
+              addr = i;
+              break;
+           :: else -> skip;
+           fi;
+           i = i + 1;
+        :: else -> break;
+        od;
+    }
+}
+
+inline free(_addr) {
+    d_step {
+        assert(mem[_addr].refc == 1);
+        mem[_addr].data = 0;
+        mem[_addr].next = NULL;
+        mem[_addr].refc = 0;
+        mem[_addr].mon = -1;
+    }
+}
+
+proctype producer() {
+    int addr;
+    int orig;
+    int next;
+    int i = 0;
     bool suc = false;
 
-produce:
-    load(old);
-    new = old + 1;
-    d_step {
-    cas(old, new, suc);
+produce_again:
+    malloc();
+    mem[addr].data = _pid + 100;
+    push();
     if
-    :: suc == true ->
-       lfstack[new].data = _pid + 100;
-       printf("pid=%d: lfstack[%d]=%d\n",
-               _pid, new, _pid + 100);
-    :: else -> skip;
-    fi;
-    }
-    if
-    :: suc == false -> goto produce;
+    :: suc == false ->
+       free(addr)
+       goto produce_again;
     :: else -> skip;
     fi;
 
-    end();
+    pass = pass + 1;
 }
 
-active[N] proctype consumer() provided(go == true) {
-    Mem m;
-    int old;
-    int new;
+proctype consumer() {
+    int orig;
+    int next;
     bool suc = false;
 
-consume:
-    load(old);
+consume_again:
+    pop();
     if
-    :: old < 0 ->
-       goto consume;
-    :: else -> skip
-    fi;
-    new = old - 1;
-    d_step {
-    cas(old, new, suc);
-    if
-    :: suc == true ->
-       lfstack[old].data = old;
-       printf("pid=%d: lfstack[%d]=%d\n",
-               _pid, old, old);
-    :: else -> skip;
-    fi;
-    }
-    if
-    :: suc == false -> goto consume;
+    :: suc == true -> free(orig);
     :: else -> skip;
     fi;
 
-    end();
+    pass = pass + 1;
 }
 
 init {
-    lfs_cnt.lcnt = -1;
-    go = true;
+    lfstack.head = NULL;
+
+    // init
+    mem[0].data = 1;
+    mem[0].next = 1;
+    mem[0].refc = 1;
+    mem[0].mon = -1;
+    mem[1].data = 2;
+    mem[1].next = 2;
+    mem[1].refc = 1;
+    mem[1].mon = -1;
+    mem[2].data = 3;
+    mem[2].next = 3;
+    mem[2].refc = 1;
+    mem[2].mon = -1;
+    mem[3].data = 4;
+    mem[3].next = NULL;
+    mem[3].refc = 0;
+    mem[3].mon = -1;
+    mem[4].next = NULL;
+    mem[4].mon = -1;
+    mem[5].next = NULL;
+    mem[5].mon = -1;
+
+    lfstack.head = 0;
+    lfstack.mon = -1;
+
+    //run producer();
+    //run producer();
+    run consumer();
+    run producer();
+    run consumer();
+    run consumer();
+
+    // wait until all processes finish
+    d_step {
+        pass == 4 -> skip;
+    }
+
+    int i = 0;
+    printf("head: %d\n", lfstack.head);
+    //do
+    //:: i < M ->
+    //   printf("mem[%d]: data=%d, next = %d, refc=%d\n",
+    //          i, mem[i].data, mem[i].next, mem[i].refc);
+    //   i = i + 1;
+    //:: else -> break;
+    //od;
+    i = lfstack.head;
+    do
+    :: i != NULL ->
+       printf("mem[%d]: data=%d, next = %d, refc=%d\n",
+              i, mem[i].data, mem[i].next, mem[i].refc);
+       assert(mem[i].refc == 1);
+       i = mem[i].next;
+    :: else -> break;
+    od;
 }

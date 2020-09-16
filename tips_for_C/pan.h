@@ -17,7 +17,7 @@
 #endif
 
 #ifdef BFS_PAR
-	#define NRUNS	0
+	#define NRUNS	1
 	#ifndef BFS
 		#define BFS
 	#endif
@@ -106,7 +106,7 @@
 #if defined(RANDSTORE) && !defined(RANDSTOR)
 	#define RANDSTOR	RANDSTORE
 #endif
-#define HAS_PROVIDED	1
+#define MERGED	1
 #if !defined(HAS_LAST) && defined(BCS)
 	#define HAS_LAST	1 /* use it, but */
 	#ifndef STORE_LAST
@@ -132,20 +132,20 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define _nstates2	4	/* :init: */
-#define minseq2	98
-#define maxseq2	100
-#define _endstate2	3
+#define _nstates2	44	/* :init: */
+#define minseq2	87
+#define maxseq2	129
+#define _endstate2	43
 
-#define _nstates1	53	/* consumer */
-#define minseq1	46
-#define maxseq1	97
-#define _endstate1	52
+#define _nstates1	37	/* consumer */
+#define minseq1	51
+#define maxseq1	86
+#define _endstate1	36
 
-#define _nstates0	47	/* producer */
+#define _nstates0	52	/* producer */
 #define minseq0	0
-#define maxseq0	45
-#define _endstate0	46
+#define maxseq0	50
+#define _endstate0	51
 
 extern short src_ln2[];
 extern short src_ln1[];
@@ -155,8 +155,8 @@ extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
 #define T_ID	unsigned char
-#define _T5	19
-#define _T2	20
+#define _T5	56
+#define _T2	57
 #define WS		8 /* word size in bytes */
 #define SYNC	0
 #define ASYNC	0
@@ -172,9 +172,14 @@ extern S_F_MAP src_file0[];
 #endif
 
 struct Mem { /* user defined type */
-	uchar data;
-	uchar mon;
-	int lcnt;
+	int data;
+	int next;
+	int refc;
+	int mon;
+};
+struct Lfstack { /* user defined type */
+	int head;
+	int mon;
 };
 #define Pinit	((P2 *)_this)
 typedef struct P2 { /* :init: */
@@ -184,8 +189,9 @@ typedef struct P2 { /* :init: */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
+	int i;
 } P2;
-#define Air2	(sizeof(P2) - 3)
+#define Air2	(sizeof(P2) - Offsetof(P2, i) - 1*sizeof(int))
 
 #define Pconsumer	((P1 *)_this)
 typedef struct P1 { /* consumer */
@@ -196,12 +202,10 @@ typedef struct P1 { /* consumer */
 	unsigned _priority : 8; /* 0..255 */
 #endif
 	unsigned suc : 1;
-	int old;
-	int new;
-	int _3_6_6_i;
-	struct Mem m;
+	int orig;
+	int next;
 } P1;
-#define Air1	0
+#define Air1	(sizeof(P1) - Offsetof(P1, next) - 1*sizeof(int))
 
 #define Pproducer	((P0 *)_this)
 typedef struct P0 { /* producer */
@@ -212,12 +216,12 @@ typedef struct P0 { /* producer */
 	unsigned _priority : 8; /* 0..255 */
 #endif
 	unsigned suc : 1;
-	int old;
-	int new;
-	int _2_3_3_i;
-	struct Mem m;
+	int addr;
+	int orig;
+	int next;
+	int i;
 } P0;
-#define Air0	0
+#define Air0	(sizeof(P0) - Offsetof(P0, i) - 1*sizeof(int))
 
 typedef struct P3 { /* np_ */
 	unsigned _pid : 8;  /* 0..255 */
@@ -419,10 +423,9 @@ typedef struct State {
 		unsigned short _event;
 	#endif
 #endif
-	unsigned go : 1;
 	int pass;
-	struct Mem lfstack[4];
-	struct Mem lfs_cnt;
+	struct Mem mem[6];
+	struct Lfstack lfstack;
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
 	char *_ids_[MAXPROC+MAXQ+4];
@@ -453,8 +456,8 @@ typedef struct TRIX_v6 {
 
 #define _start3	0 /* np_ */
 #define _start2	1
-#define _start1	4
-#define _start0	4
+#define _start1	22
+#define _start0	20
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
 #else
@@ -814,7 +817,7 @@ void qsend(int, int, int);
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	21
+#define NTRANS	58
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);
