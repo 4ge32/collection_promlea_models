@@ -132,20 +132,20 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define _nstates2	44	/* :init: */
-#define minseq2	87
+#define _nstates2	47	/* :init: */
+#define minseq2	84
 #define maxseq2	129
-#define _endstate2	43
+#define _endstate2	46
 
-#define _nstates1	37	/* consumer */
-#define minseq1	51
-#define maxseq1	86
-#define _endstate1	36
+#define _nstates1	38	/* consumer */
+#define minseq1	47
+#define maxseq1	83
+#define _endstate1	37
 
-#define _nstates0	52	/* producer */
+#define _nstates0	48	/* producer */
 #define minseq0	0
-#define maxseq0	50
-#define _endstate0	51
+#define maxseq0	46
+#define _endstate0	47
 
 extern short src_ln2[];
 extern short src_ln1[];
@@ -155,8 +155,8 @@ extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
 #define T_ID	unsigned char
-#define _T5	56
-#define _T2	57
+#define _T5	60
+#define _T2	61
 #define WS		8 /* word size in bytes */
 #define SYNC	0
 #define ASYNC	0
@@ -190,8 +190,9 @@ typedef struct P2 { /* :init: */
 	unsigned _priority : 8; /* 0..255 */
 #endif
 	int i;
+	int loop_cnt;
 } P2;
-#define Air2	(sizeof(P2) - Offsetof(P2, i) - 1*sizeof(int))
+#define Air2	(sizeof(P2) - Offsetof(P2, loop_cnt) - 1*sizeof(int))
 
 #define Pconsumer	((P1 *)_this)
 typedef struct P1 { /* consumer */
@@ -456,7 +457,7 @@ typedef struct TRIX_v6 {
 
 #define _start3	0 /* np_ */
 #define _start2	1
-#define _start1	22
+#define _start1	23
 #define _start0	20
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
@@ -817,7 +818,7 @@ void qsend(int, int, int);
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	58
+#define NTRANS	62
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);

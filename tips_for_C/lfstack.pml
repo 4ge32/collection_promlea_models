@@ -1,3 +1,4 @@
+#define LL_SC
 #define N 2
 #define M N*3
 #define NULL -1
@@ -36,7 +37,9 @@ inline compare_and_swap(_new) {
 #else
         :: lfstack.mon == _pid->
 #endif
+	   assert(_new != -1);
            lfstack.head = _new;
+       	   printf("%d: lfs=%d\n", _pid, lfstack.head);
 #ifdef LL_SC
            lfstack.mon = -1;
 #endif
@@ -47,16 +50,14 @@ inline compare_and_swap(_new) {
 }
 
 inline push() {
-    // atomic_load
     atomic_load(orig);
     mem[addr].next = orig;
+    printf("%d: addr=%d, next=%d\n", _pid, addr, mem[addr].next)
 
-    // compare and swap
     compare_and_swap(addr);
 }
 
 inline pop() {
-    // atomic_load
     atomic_load(orig);
     if
     :: orig == NULL -> goto end;
@@ -64,7 +65,6 @@ inline pop() {
     fi;
     next = mem[orig].next;
 
-    // compare_and_swap
     compare_and_swap(next);
 end:
     skip
@@ -107,16 +107,16 @@ proctype producer() {
     int i = 0;
     bool suc = false;
 
-produce_again:
     malloc();
+produce_again:
     mem[addr].data = _pid + 100;
     push();
     if
     :: suc == false ->
-       free(addr)
        goto produce_again;
     :: else -> skip;
     fi;
+   printf("%d: mem[%d].next=%d, lfs=%d\n", _pid, addr, mem[addr].next, lfstack.head);
 
     pass = pass + 1;
 }
@@ -129,14 +129,20 @@ proctype consumer() {
 consume_again:
     pop();
     if
-    :: suc == true -> free(orig);
-    :: else -> skip;
+    :: suc == true ->
+       free(orig);
+    :: else -> goto consume_again;
     fi;
 
     pass = pass + 1;
 }
 
 init {
+#ifdef LL_SC
+    printf("LL_SC\n");
+#else
+    printf("CAS\n");
+#endif
     lfstack.head = NULL;
 
     // init
@@ -154,7 +160,7 @@ init {
     mem[2].mon = -1;
     mem[3].data = 4;
     mem[3].next = NULL;
-    mem[3].refc = 0;
+    mem[3].refc = 1;
     mem[3].mon = -1;
     mem[4].next = NULL;
     mem[4].mon = -1;
@@ -164,12 +170,10 @@ init {
     lfstack.head = 0;
     lfstack.mon = -1;
 
-    //run producer();
-    //run producer();
+    run consumer();
+    run consumer();
     run consumer();
     run producer();
-    run consumer();
-    run consumer();
 
     // wait until all processes finish
     d_step {
@@ -186,12 +190,15 @@ init {
     //:: else -> break;
     //od;
     i = lfstack.head;
+    int loop_cnt = 0;
     do
     :: i != NULL ->
        printf("mem[%d]: data=%d, next = %d, refc=%d\n",
               i, mem[i].data, mem[i].next, mem[i].refc);
-       assert(mem[i].refc == 1);
+       //assert(mem[i].refc == 1);
        i = mem[i].next;
+       loop_cnt = loop_cnt + 1;
     :: else -> break;
     od;
+    assert(loop_cnt == 2);
 }
