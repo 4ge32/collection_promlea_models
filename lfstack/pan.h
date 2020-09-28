@@ -132,20 +132,20 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define _nstates2	41	/* :init: */
-#define minseq2	84
-#define maxseq2	123
-#define _endstate2	40
+#define _nstates2	42	/* :init: */
+#define minseq2	94
+#define maxseq2	134
+#define _endstate2	41
 
-#define _nstates1	39	/* consumer */
-#define minseq1	46
-#define maxseq1	83
-#define _endstate1	38
+#define _nstates1	44	/* consumer */
+#define minseq1	51
+#define maxseq1	93
+#define _endstate1	43
 
-#define _nstates0	47	/* producer */
+#define _nstates0	52	/* producer */
 #define minseq0	0
-#define maxseq0	45
-#define _endstate0	46
+#define maxseq0	50
+#define _endstate0	51
 
 extern short src_ln2[];
 extern short src_ln1[];
@@ -155,8 +155,8 @@ extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
 #define T_ID	unsigned char
-#define _T5	52
-#define _T2	53
+#define _T5	53
+#define _T2	54
 #define WS		8 /* word size in bytes */
 #define SYNC	0
 #define ASYNC	0
@@ -175,10 +175,11 @@ struct Mem { /* user defined type */
 	int data;
 	int next;
 	int refc;
+	unsigned tag : 1;
 };
 struct Lfstack { /* user defined type */
 	int head;
-	int mon;
+	unsigned tag : 1;
 };
 #define Pinit	((P2 *)_this)
 typedef struct P2 { /* :init: */
@@ -424,7 +425,7 @@ typedef struct State {
 	#endif
 #endif
 	int pass;
-	struct Mem mem[6];
+	struct Mem mem[15];
 	struct Lfstack lfstack;
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
@@ -456,7 +457,7 @@ typedef struct TRIX_v6 {
 
 #define _start3	0 /* np_ */
 #define _start2	1
-#define _start1	25
+#define _start1	30
 #define _start0	19
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
@@ -817,7 +818,7 @@ void qsend(int, int, int);
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	54
+#define NTRANS	55
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);

@@ -4,7 +4,7 @@
 #endif
 #endif
 
-#define N 2
+#define N 5
 #define M N*3
 #define NULL -1
 
@@ -13,7 +13,10 @@ typedef Mem {
     int next; // next pointer
     int refc  // reference count for detecting double free
 #ifdef TAGP
-    int tag;
+	bit tag; // type size is important
+	         // int: no error on normal search depth
+			 // byte: error on normal search depth
+			 // bit: error on normal search depth, search have finished.
 #endif
 }
 
@@ -23,7 +26,7 @@ typedef Lfstack {
     int mon;
 #endif
 #ifdef TAGP
-    int tag;
+    bit tag; // ! it shall be as same as tag in Mem
 #endif
 }
 
