@@ -175,11 +175,11 @@ struct Mem { /* user defined type */
 	int data;
 	int next;
 	int refc;
-	unsigned tag : 1;
+	uchar tag;
 };
 struct Lfstack { /* user defined type */
 	int head;
-	unsigned tag : 1;
+	uchar tag;
 };
 #define Pinit	((P2 *)_this)
 typedef struct P2 { /* :init: */
@@ -425,7 +425,7 @@ typedef struct State {
 	#endif
 #endif
 	int pass;
-	struct Mem mem[15];
+	struct Mem mem[9];
 	struct Lfstack lfstack;
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
