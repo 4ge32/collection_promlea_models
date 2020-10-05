@@ -4,7 +4,7 @@
 #endif
 #endif
 
-#define N 3
+#define N 2
 #define M N*3
 #define NULL -1
 
@@ -21,7 +21,7 @@ typedef Mem {
 }
 
 typedef Lfstack {
-    int head;
+    int head; // head of lfstack, which is the mem array index.
 #ifdef LL_SC
     int mon;
 #endif
@@ -48,7 +48,7 @@ inline atomic_load(_cur) {
     }
 }
 
-inline compare_and_swap(_old, _new) {
+inline atomic_compare_and_exchange(_old, _new, _suc) {
     d_step {
 #ifdef TAGP
 		if
@@ -68,35 +68,16 @@ inline compare_and_swap(_old, _new) {
 #ifdef LL_SC
            lfstack.mon = -1;
 #endif
-           suc = true;
+           _suc = true;
         :: else -> skip;
         fi;
+#ifdef TAGP
 cas_end:
+#endif
     }
 }
 
-inline push() {
-    atomic_load(orig);
-    mem[addr].next = orig;
-    //printf("%d: addr=%d, next=%d\n", _pid, addr, mem[addr].next)
-
-    compare_and_swap(orig, addr);
-}
-
-inline pop() {
-    atomic_load(orig);
-    if
-    :: orig == NULL -> goto end;
-    :: else -> skip;
-    fi;
-    next = mem[orig].next;
-
-    compare_and_swap(orig, next);
-end:
-    skip
-}
-
-inline malloc() {
+inline malloc(_addr) {
     d_step {
         do
         :: i < M ->
@@ -105,7 +86,7 @@ inline malloc() {
               mem[i].data = 0;
               mem[i].next = NULL;
               mem[i].refc = 1;
-              addr = i;
+              _addr = i;
               break;
            :: else -> skip;
            fi;
@@ -117,7 +98,7 @@ inline malloc() {
 
 inline free(_addr) {
     d_step {
-        assert(mem[_addr].refc == 1);
+        assert(mem[_addr].refc == 1); // check double-free corruption
         mem[_addr].data = 0;
         mem[_addr].next = NULL;
         mem[_addr].refc = 0;
@@ -131,17 +112,21 @@ proctype producer() {
     int i = 0;
     bool suc = false;
 
-    malloc();
+    malloc(addr);
 produce_again:
     mem[addr].data = _pid + 100;
-    push();
+
+    // lock-free push
+    atomic_load(orig);
+    mem[addr].next = orig;
+    atomic_compare_and_exchange(orig, addr, suc);
     if
     :: suc == false ->
        goto produce_again;
     :: else -> skip;
     fi;
-   //printf("%d: mem[%d].next=%d, lfs=%d\n", _pid, addr, mem[addr].next, lfstack.head);
 
+	// Finish
     pass = pass + 1;
 }
 
@@ -151,13 +136,21 @@ proctype consumer() {
     bool suc = false;
 
 consume_again:
-    pop();
+    // lock-free pop
+    atomic_load(orig);
+    if
+    :: orig == NULL -> goto consume_again;
+    :: else -> skip;
+    fi;
+    next = mem[orig].next;
+    atomic_compare_and_exchange(orig, next, suc);
     if
     :: suc == true ->
        free(orig);
     :: else -> goto consume_again;
     fi;
 
+	// Finish
     pass = pass + 1;
 }
 
@@ -194,6 +187,7 @@ init {
     lfstack.tag = 0;
 #endif
 
+    // should be as same as N*2
     run consumer();
     run consumer();
     run consumer();
@@ -201,7 +195,7 @@ init {
 
     // wait until all processes finish
     d_step {
-        pass == 4 -> skip;
+        pass == (N*2) -> skip;
     }
 
     int i = 0;
