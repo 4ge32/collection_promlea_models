@@ -1,5 +1,4 @@
 #include <stdatomic.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct _Node {
@@ -20,20 +19,26 @@ void push(_Atomic lfstack_t *lfstack, int value) {
   do {
     node->next = orig.head;
     next.head = node;
+#ifdef TAGP
     next.tag = orig.tag + 1;
+#endif
   } while (!atomic_compare_exchange_weak(lfstack, &orig, next));
 }
 
 int pop(_Atomic lfstack_t *lfstack) {
   lfstack_t next;
   lfstack_t orig = atomic_load(lfstack);
+  int ret;
   do {
     if (orig.head == NULL) {
       return -1;
     }
     next.head = orig.head->next;
+#ifdef TAGP
     next.tag = orig.tag + 1;
+#endif
   } while (!atomic_compare_exchange_weak(lfstack, &orig, next));
+  ret = orig.head->data;
   free(orig.head);
-  return 0;
+  return ret;
 }
