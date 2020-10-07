@@ -113,9 +113,8 @@ proctype producer() {
     bool suc = false;
 
     malloc(addr);
-produce_again:
     mem[addr].data = _pid + 100;
-
+produce_again:
     // lock-free push
     atomic_load(orig);
     mem[addr].next = orig;
