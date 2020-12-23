@@ -37,6 +37,7 @@ int pass = 0;
 inline atomic_load(_cur) {
     d_step {
         _cur = lfstack.head;
+		printf("%d: atomic_load -> %d\n", _pid, _cur);
 #ifdef TAGP
         // tag pointer
         lfstack.tag = lfstack.tag + 1;
@@ -63,12 +64,12 @@ inline atomic_compare_and_exchange(_old, _new, _suc) {
 #else
         :: lfstack.mon == _pid->
 #endif
-	       assert(_new != -1);
            lfstack.head = _new;
 #ifdef LL_SC
            lfstack.mon = -1;
 #endif
            _suc = true;
+		   printf("%d: CAS success -> %d->%d\n", _pid, _old, _new);
         :: else -> skip;
         fi;
 #ifdef TAGP

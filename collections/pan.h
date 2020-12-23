@@ -2,7 +2,7 @@
 #define PAN_H
 
 #define SpinVersion	"Spin Version 6.5.1 -- 29 March 2020"
-#define PanSource	"lfstack.pml"
+#define PanSource	"peterson.spin"
 
 #define G_long	8
 #define G_int	4
@@ -17,7 +17,7 @@
 #endif
 
 #ifdef BFS_PAR
-	#define NRUNS	1
+	#define NRUNS	0
 	#ifndef BFS
 		#define BFS
 	#endif
@@ -120,7 +120,7 @@
 #endif
 #ifdef NP
 	#define HAS_NP	2
-	#define VERI	3	/* np_ */
+	#define VERI	1	/* np_ */
 #endif
 #if defined(NOCLAIM) && defined(NP)
 	#undef NOCLAIM
@@ -132,31 +132,17 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define _nstates2	39	/* :init: */
-#define minseq2	77
-#define maxseq2	114
-#define _endstate2	38
-
-#define _nstates1	35	/* consumer */
-#define minseq1	43
-#define maxseq1	76
-#define _endstate1	34
-
-#define _nstates0	44	/* producer */
+#define _nstates0	20	/* mutex */
 #define minseq0	0
-#define maxseq0	42
-#define _endstate0	43
+#define maxseq0	18
+#define _endstate0	19
 
-extern short src_ln2[];
-extern short src_ln1[];
 extern short src_ln0[];
-extern S_F_MAP src_file2[];
-extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
 #define T_ID	unsigned char
-#define _T5	50
-#define _T2	51
+#define _T5	11
+#define _T2	12
 #define WS		8 /* word size in bytes */
 #define SYNC	0
 #define ASYNC	0
@@ -171,66 +157,27 @@ extern S_F_MAP src_file0[];
 	#endif
 #endif
 
-struct Mem { /* user defined type */
-	int data;
-	int next;
-	int refc;
-};
-struct Lfstack { /* user defined type */
-	int head;
-};
-#define Pinit	((P2 *)_this)
-typedef struct P2 { /* :init: */
+#define Pmutex	((P0 *)_this)
+typedef struct P0 { /* mutex */
 	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 3; /* proctype */
-	unsigned _p   : 7; /* state    */
+	unsigned _t   : 2; /* proctype */
+	unsigned _p   : 6; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
-	int i;
-	int loop_cnt;
-} P2;
-#define Air2	(sizeof(P2) - Offsetof(P2, loop_cnt) - 1*sizeof(int))
-
-#define Pconsumer	((P1 *)_this)
-typedef struct P1 { /* consumer */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 3; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-	unsigned suc : 1;
-	int orig;
-	int next;
-} P1;
-#define Air1	(sizeof(P1) - Offsetof(P1, next) - 1*sizeof(int))
-
-#define Pproducer	((P0 *)_this)
-typedef struct P0 { /* producer */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 3; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-	unsigned suc : 1;
-	int addr;
-	int orig;
-	int next;
-	int i;
+	int _1_1_other;
 } P0;
-#define Air0	(sizeof(P0) - Offsetof(P0, i) - 1*sizeof(int))
+#define Air0	(sizeof(P0) - Offsetof(P0, _1_1_other) - 1*sizeof(int))
 
-typedef struct P3 { /* np_ */
+typedef struct P1 { /* np_ */
 	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 3; /* proctype */
-	unsigned _p   : 7; /* state    */
+	unsigned _t   : 2; /* proctype */
+	unsigned _p   : 6; /* state    */
 #ifdef HAS_PRIORITY
 	unsigned _priority : 8; /* 0..255 */
 #endif
-} P3;
-#define Air3	(sizeof(P3) - 3)
+} P1;
+#define Air1	(sizeof(P1) - 2)
 
 #define Pclaim	P0
 #ifndef NCLAIMS
@@ -422,9 +369,9 @@ typedef struct State {
 		unsigned short _event;
 	#endif
 #endif
-	int pass;
-	struct Mem mem[6];
-	struct Lfstack lfstack;
+	int turn;
+	int interested[2];
+	int cnt;
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
 	char *_ids_[MAXPROC+MAXQ+4];
@@ -449,14 +396,12 @@ typedef struct TRIX_v6 {
 #define FORWARD_MOVES	"pan.m"
 #define BACKWARD_MOVES	"pan.b"
 #define TRANSITIONS	"pan.t"
-#define _NP_	3
-#define _nstates3	3 /* np_ */
-#define _endstate3	2 /* np_ */
+#define _NP_	1
+#define _nstates1	3 /* np_ */
+#define _endstate1	2 /* np_ */
 
-#define _start3	0 /* np_ */
-#define _start2	1
-#define _start1	4
-#define _start0	19
+#define _start1	0 /* np_ */
+#define _start0	11
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
 #else
@@ -816,7 +761,7 @@ void qsend(int, int, int);
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	52
+#define NTRANS	13
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);
